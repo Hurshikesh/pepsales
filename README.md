@@ -1,4 +1,5 @@
 Notification Service Backend
+
 A FastAPI-based notification backend service using PostgreSQL as the database and RabbitMQ for message processing. This project provides a simple yet powerful system for managing and delivering notifications.
 Prerequisites
 
@@ -8,9 +9,12 @@ Git
 Postman (for testing the API)
 
 Setup Guide
+
 1. Clone the repository
-bashgit clone https://github.com/Hurshikesh/pepsales.git
+bash git clone https://github.com/Hurshikesh/pepsales.git
 cd pepsales
+
+
 2. Create .env file
 Create a .env file in the project root with the following variables:
 DATABASE_URL=postgresql://postgres:password@localhost:5432/notificationdb
@@ -19,23 +23,37 @@ SMTP_HOST=smtp.mailtrap.io
 SMTP_PORT=2525
 SMTP_USER=your_email@example.com
 SMTP_PASSWORD=your_email_password
-3. Start PostgreSQL
+
+
+3. Start PostgreSQL 
 Launch PostgreSQL using Docker Compose:
-bashdocker-compose up -d
+
+bash docker-compose up -d
+
+
 4. Start RabbitMQ
 Launch RabbitMQ in a Docker container:
-bashdocker run -d --hostname my-rabbit --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+
+bash docker run -d --hostname my-rabbit --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 The RabbitMQ management interface will be available at http://localhost:15672/ (default credentials: guest/guest)
+
 5. Set up Python Environment
 Create and activate a virtual environment, then install dependencies:
-bashpython3 -m venv venv
+
+bash python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
+
+
 6. Initialize Database
 Connect to the PostgreSQL container and create the necessary tables:
-bashdocker exec -it notification_postgres psql -U postgres -d notificationdb
+
+bash docker exec -it notification_postgres psql -U postgres -d notificationdb
+
 Once connected to PostgreSQL, execute the following SQL commands:
+
 sql-- Create users table
+
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR UNIQUE NOT NULL,
@@ -43,6 +61,7 @@ CREATE TABLE users (
 );
 
 -- Create notifications table
+
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
@@ -52,31 +71,53 @@ CREATE TABLE notifications (
 );
 
 -- Insert test users
+
 INSERT INTO users (email, name) VALUES ('alice@example.com', 'Alice'), ('bob@example.com', 'Bob');
+
 Type \q to exit the PostgreSQL prompt.
+
+
 7. Start the FastAPI Server
 Run the FastAPI application:
-bashuvicorn app.main:app --reload --port 5000
+
+bash uvicorn app.main:app --reload --port 5000
+
 The API will be available at: http://localhost:5000
+
 8. Start the Notification Worker
 In a separate terminal, run the worker to process notifications:
+
 bashPYTHONPATH=. python3 app/worker.py
+
+
 Testing the API
+
 Send a notification
 Using Postman or curl, send a POST request:
+
 POST http://localhost:5000/notifications
+
 With the JSON body:
-json{
+
+json {
   "user_id": 1,
   "type": "welcome",
   "content": "Welcome to our platform! 🎉"
 }
+
 Get notifications for a user
 To fetch notifications for a specific user:
+
 GET http://localhost:5000/notifications/1
+
 Replace 1 with the desired user ID.
+
 API Endpoints
-MethodEndpointDescriptionPOST/notificationsQueue a new notificationGET/notifications/{user_id}Get notifications for a specific user
+MethodEndpointDescription 
+POST/notifications   Queue a new notification
+GET/notifications/{user_id}   Get notifications for a specific user
+
+
 Development
 The application consists of:
 
