@@ -11,12 +11,14 @@ Postman (for testing the API)
 Setup Guide
 
 1. Clone the repository
-bash git clone https://github.com/Hurshikesh/pepsales.git
+   
+git clone https://github.com/Hurshikesh/pepsales.git
 cd pepsales
 
 
-2. Create .env file
+3. Create .env file
 Create a .env file in the project root with the following variables:
+
 DATABASE_URL=postgresql://postgres:password@localhost:5432/notificationdb
 RABBITMQ_URL=amqp://guest:guest@localhost/
 SMTP_HOST=smtp.mailtrap.io
@@ -25,22 +27,23 @@ SMTP_USER=your_email@example.com
 SMTP_PASSWORD=your_email_password
 
 
-3. Start PostgreSQL 
+5. Start PostgreSQL 
 Launch PostgreSQL using Docker Compose:
 
-bash docker-compose up -d
+docker-compose up -d
 
 
 4. Start RabbitMQ
 Launch RabbitMQ in a Docker container:
 
-bash docker run -d --hostname my-rabbit --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+docker run -d --hostname my-rabbit --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+
 The RabbitMQ management interface will be available at http://localhost:15672/ (default credentials: guest/guest)
 
 5. Set up Python Environment
 Create and activate a virtual environment, then install dependencies:
 
-bash python3 -m venv venv
+python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
@@ -48,11 +51,11 @@ pip install -r requirements.txt
 6. Initialize Database
 Connect to the PostgreSQL container and create the necessary tables:
 
-bash docker exec -it notification_postgres psql -U postgres -d notificationdb
+docker exec -it notification_postgres psql -U postgres -d notificationdb
 
 Once connected to PostgreSQL, execute the following SQL commands:
 
-sql-- Create users table
+Create users table
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -60,7 +63,7 @@ CREATE TABLE users (
     name VARCHAR NOT NULL
 );
 
--- Create notifications table
+Create notifications table
 
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
@@ -70,7 +73,6 @@ CREATE TABLE notifications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert test users
 
 INSERT INTO users (email, name) VALUES ('alice@example.com', 'Alice'), ('bob@example.com', 'Bob');
 
@@ -80,14 +82,14 @@ Type \q to exit the PostgreSQL prompt.
 7. Start the FastAPI Server
 Run the FastAPI application:
 
-bash uvicorn app.main:app --reload --port 5000
+uvicorn app.main:app --reload --port 5000
 
 The API will be available at: http://localhost:5000
 
 8. Start the Notification Worker
 In a separate terminal, run the worker to process notifications:
 
-bashPYTHONPATH=. python3 app/worker.py
+PYTHONPATH=. python3 app/worker.py
 
 
 Testing the API
@@ -99,7 +101,7 @@ POST http://localhost:5000/notifications
 
 With the JSON body:
 
-json {
+{
   "user_id": 1,
   "type": "welcome",
   "content": "Welcome to our platform! 🎉"
