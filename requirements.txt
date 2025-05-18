@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+aio_pika
+asyncpg
+databases
+sqlalchemy
+pydantic
+aiosmtplib
+python-dotenv
